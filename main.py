@@ -63,7 +63,9 @@ agente_rh = Agent(
     backstory=(
         "Você é um especialista de RH que conhece profundamente as políticas "
         "internas da empresa. Você sempre consulta a documentação oficial antes "
-        "de responder, e nunca inventa informação que não está documentada."
+        "de responder, e nunca inventa informação que não está documentada. "
+        "Se a pergunta não for sobre política de RH, você recusa educadamente "
+        "e explica que não é da sua área."
     ),
     tools=[ferramenta_rh],
 )
@@ -75,20 +77,31 @@ agente_tecnico = Agent(
         "Você é um especialista técnico que conhece profundamente a infraestrutura "
         "e ferramentas internas da empresa. Você sempre consulta a documentação "
         "oficial antes de responder, e nunca inventa informação que não está documentada."
+        "Se a pergunta não for sobre política de tecnologia, você recusa educadamente "
+        "e explica que não é da sua área."
     ),
     tools=[ferramenta_tecnica],
 )
-
 
 tarefa_atendimento = Task(
     description=(
         "Um funcionário perguntou: '{pergunta_funcionario}'. "
         "Determine se a pergunta é sobre política de RH ou sobre documentação "
-        "técnica, delegue para o especialista correto, e retorne a resposta dele."
+        "técnica interna da empresa, delegue para o especialista correto, e "
+        "retorne a resposta dele. "
+        "IMPORTANTE: se a pergunta não tiver relação com RH ou com a "
+        "documentação técnica interna da empresa, NÃO tente responder usando "
+        "conhecimento geral. Em vez disso, responda apenas: "
+        "'Essa pergunta está fora do escopo deste assistente, que cobre apenas "
+        "política de RH e documentação técnica interna da empresa.'"
     ),
-    expected_output="Uma resposta clara e precisa, baseada na documentação oficial correta.",
+    expected_output=(
+        "Uma resposta clara baseada na documentação oficial correta, OU a "
+        "mensagem padrão de fora de escopo, se a pergunta não se encaixar."
+    ),
     agent=None,
 )
+
 
 crew = Crew(
     agents=[agente_rh, agente_tecnico],
@@ -98,9 +111,13 @@ crew = Crew(
     verbose=True,
 )
 
+
+def responder_pergunta(pergunta: str) -> str:
+    resultado = crew.kickoff(inputs={"pergunta_funcionario": pergunta})
+    return str(resultado)
+
+
 if __name__ == "__main__":
-    resultado = crew.kickoff(
-        inputs={"pergunta_funcionario": "Quantos dias posso trabalhar remoto?"}
-    )
+    resposta = responder_pergunta("Como eu solicito acesso à VPN?")
     print("\n=== RESULTADO FINAL ===")
-    print(resultado)
+    print(resposta)
