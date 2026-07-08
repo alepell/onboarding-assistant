@@ -71,7 +71,6 @@ cp .env.example .env
 
 ```env
 OPENAI_API_KEY=sua-chave-aqui
-TAVILY_API_KEY=sua-chave-aqui
 ```
 
 ## ▶️ Uso
@@ -129,7 +128,3 @@ Esses scripts geram os chunks dos documentos, criam o vector store e mostram os 
 | Vector store         | [Chroma](https://www.trychroma.com/)             |
 | Chunking            | LangChain `RecursiveCharacterTextSplitter`        |
 | API                 | [FastAPI](https://fastapi.tiangolo.com/)          |
-
-## 📄 Licença
-
-Projeto de estudo/portfólio — defina a licença conforme sua necessidade.
